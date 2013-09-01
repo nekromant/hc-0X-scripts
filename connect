@@ -1,0 +1,19 @@
+#!/bin/bash
+getnodes() 
+{
+    hcitool scan|grep dbg|while read line; do
+    line=`echo $line|sed s/_/:/`
+    
+    done
+    
+}
+
+ADDR=$1
+rfcomm release rfcomm0
+A=1
+while [ "$A" -ne "0" ]; do 
+ l2ping -c 1 $ADDR
+ A=$?
+done
+rfcomm bind rfcomm0 $ADDR
+minicom -o -D /dev/rfcomm0

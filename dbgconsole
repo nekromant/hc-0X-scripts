@@ -1,0 +1,75 @@
+#!/bin/bash
+
+
+[ `whoami` != "root" ] && sudo $0 $*
+
+CONFIG=/etc/bt-db
+DEV=rfcomm0
+
+getnodes() 
+{
+    hcitool scan|grep dbg|while read line; do
+    echo $line|sed s/_/:/|sed s/dbg://
+    done
+}
+
+updatedb() {
+    echo "Updating device database..."
+    CONF=`cat $CONFIG`
+    ( cat $CONFIG; getnodes; ) | sort -u > $CONFIG
+    cat $CONFIG
+}
+
+
+getaddr() {
+    cat $CONFIG | grep $1 | awk '{print $1}' 
+}
+
+
+
+connect() {
+ADDR=$1
+rfcomm release rfcomm0
+A=1
+while [ "$A" -ne "0" ]; do 
+ l2ping -c 1 $ADDR
+ A=$?
+done
+rfcomm bind $DEV $ADDR
+minicom -o -D /dev/$DEV
+}
+
+pick() {
+    echo "Pick a debugging device to connect to (^C to abort):"
+    select p in `cat $CONFIG | awk '{print $2}'`; do
+	connect `getaddr $p`
+    done
+}
+
+help() {
+    cat <<EOF
+Quick and debugging terminal launcher with dev-db.
+USAGE: 
+$0 scan - scan and update device database
+$0 - interactively select and connect to a device
+$0 connect BTADDR - connect to this device
+(c) Necromant 2013
+BT Device names MUST have a 'dbg:' or 'dbg_' prefix to
+get listed here.  
+EOF
+}
+
+case "$1" in
+"scan")
+	updatedb
+	;;
+"connect")
+	connect $2
+	;;
+"--help")
+	help
+	;;
+*)
+	pick
+	;;
+esac

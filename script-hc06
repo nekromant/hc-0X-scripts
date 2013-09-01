@@ -1,0 +1,20 @@
+#!/bin/bash
+
+NAME=$1
+PORT=/dev/ttyUSB0
+PIN=0000
+
+cmds() {
+    cat << EOF
+AT+VERSION
+AT+NAME${NAME}
+AT+PIN${PIN}
+AT+BAUD8
+EOF
+}
+
+cmds | while read line; do
+echo $line
+echo -ne "${line}" > /dev/ttyUSB0
+sleep 1
+done

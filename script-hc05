@@ -1,0 +1,26 @@
+#!/bin/bash
+
+NAME=$1
+PORT=/dev/ttyUSB0
+PIN=0000
+#spd,stop,par
+UART=115200,1,0
+
+cmds() {
+    cat << EOF
+AT+ROLE=0
+AT+ROLE?
+AT+NAME=${NAME}
+AT+NAME?
+AT+PSWD=${PIN}
+AT+PSWD?
+AT+UART=${UART}
+AT+UART?
+EOF
+}
+
+cmds | while read line; do
+echo $line
+echo -ne "${line}\r\n" > /dev/ttyUSB0
+sleep 1
+done
