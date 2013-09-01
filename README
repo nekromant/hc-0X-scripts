@@ -1,42 +1,41 @@
 What is it
 -----------
-
-These are a bunch of helper scripts to automate setup of HC-05 and HC-06 
+These are a bunch of helper scripts to automate configuration of HC-05 and HC-06 
 bluetooth to UART modules I've come along. 
-
 
 Prereqs
 -------
-Linux with bluez and stuff. Bash, sed, awk.
+Linux with bluez and stuff. Bash, sed, awk. Usual stuff.
 
 HOWTO: Configure
 ----------------
-Determine if you have a HC-05 or HC-06. 
+Determine if you have a HC-05 or HC-06, connect to your PC.
+ 
 HC-06 use timeout to detect line ends (sic!)
 HC-05 use \r\n. 
 
-HC-05 default to 38400
-HC-06 default to 9600
+HC-05 defaults to 38400
+HC-06 defaults to 9600
 
 Open up script-hc05 or script-hc6, edit PIN, speed, etc. 
 Open up minicom in a separate terminal and set the speed
+
 Without closing minicom run 
 ./script-hcX device_name
 
-That will do the magic for you. 
+That will do the magic for you, you can inspect minicom for any errors
 
 HOWTO: connect
 --------------
-
 You can use the 'connect' script
 USAGE: ./connect BDADDR
-
 The script will ping the device until it comes live, 
-and then fire up minicom. Useful to catch boot logs as early as possible.
+and then fire up minicom. Useful to catch boot logs as early as possible:
+Just run the script prior to poweing up the device. 
+
 
 HOWTO: manage
 -------------
-
 If you have a bunch of devices on debug consoles (like me), you need to manage
 this zoo. dbgconsole is here to help. 
 Just add 'dbg:' or 'dbg_' prefixes for your bt devices and use dbgconsole. 
@@ -50,5 +49,5 @@ Now, you can use
 dbgconsole scan
 
 to scan for devices having dbg prefix in their names, and update the database. 
-To connect to a device in the database just run dbgconsole with no args. You will be 
-prompted what device to use. 
+To connect to a device in the database just run dbgconsole with no args. 
+You will be prompted what device to use. 
