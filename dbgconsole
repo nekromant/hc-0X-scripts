@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-[ `whoami` != "root" ] && sudo $0 $*
+[ `whoami` != "root" ] && ( sudo $0 $*; exit $?)
 
 CONFIG=/etc/bt-db
 DEV=rfcomm0
@@ -43,6 +43,7 @@ pick() {
     echo "Pick a debugging device to connect to (^C to abort):"
     select p in `cat $CONFIG | awk '{print $2}'`; do
 	connect `getaddr $p`
+	exit
     done
 }
 
