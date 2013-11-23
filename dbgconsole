@@ -1,7 +1,13 @@
 #!/bin/bash
 
+reinvoke()
+{
+	N=$1
+	shift
+	sudo $N $*
+}
 
-[ `whoami` != "root" ] && ( sudo $0 $*; exit $?)
+[ `whoami` != "root" ] && reinvoke $0 $*
 
 CONFIG=/etc/bt-db
 DEV=rfcomm0
@@ -16,7 +22,7 @@ getnodes()
 updatedb() {
     echo "Updating device database..."
     CONF=`cat $CONFIG`
-    ( cat $CONFIG; getnodes; ) | sort -u > $CONFIG
+    ( echo $CONF; getnodes; ) | sort -u > $CONFIG
     cat $CONFIG
 }
 
@@ -29,7 +35,8 @@ getaddr() {
 
 connect() {
 ADDR=$1
-rfcomm release rfcomm0
+echo "Waiting for device $ADDR; Supply power now."
+rfcomm release rfcomm0 2>/dev/null
 A=1
 while [ "$A" -ne "0" ]; do 
  l2ping -c 1 $ADDR
