@@ -8,6 +8,7 @@ reinvoke()
 }
 
 [ `whoami` != "root" ] && reinvoke $0 $*
+[ `whoami` != "root" ] && exit
 
 CONFIG=/etc/bt-db
 DEV=rfcomm0
@@ -21,8 +22,9 @@ getnodes()
 
 updatedb() {
     echo "Updating device database..."
-    CONF=`cat $CONFIG`
-    ( echo $CONF; getnodes; ) | sort -u > $CONFIG
+    ( cat $CONFIG; getnodes; ) | sort -u > /tmp/btnewdb
+    rm $CONFIG
+    mv /tmp/btnewdb $CONFIG
     cat $CONFIG
 }
 
